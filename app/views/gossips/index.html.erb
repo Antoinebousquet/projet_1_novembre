@@ -1,0 +1,50 @@
+<!-- Welcome Jumbotron -->
+<div class = "container jumb">
+	<div class="jumbotron">
+	  <h2 class="display-1" style='color:#FFFFFF;'>Welcome 
+	  	<% if current_user %>
+	  	<%= current_user.first_name %>!
+		<% end %>
+	  </h2>
+	  <h3 style='color:#FFFFFF;'>This is my funny Gossip application :)</h3>
+	  <hr class="my-4">
+	  <p class="lead" style='color:#FFFFFF;'>Click on the button below to create a new Gossip.</p>
+	  <p class="lead">
+	    <span class="btn btn-primary btn-lg" role="button"> <%= link_to "New Gossip", new_gossip_path, style: 'color:#FFFFFF;', class: 'css_class'  %>
+	    </span>
+	  </p>
+	</div>
+</div>
+
+<!-- Gossip Cards -->
+<div class = "container list" >
+	<h1> Here are all the <%= @all_gossips.size %> gossips : </h1>
+	<br/>
+	<div class = "row">
+		<% @all_gossips.each_with_index do |gossip, i| %>
+			<div class="card col-xs-12 col-sm-12 col-md-4 col-lg-4">
+			  <div class="card-body">
+			  	<h3><%= gossip.title %></h3>
+			    <p><%= gossip.user.first_name %> <%= gossip.user.last_name %></p>
+			    <p><%= gossip.comments.count %> comments</p>
+				<span class="btn btn-warning" role="button"> <%= link_to "View Gossip", gossip_path(gossip.id), style: 'color:#000000;', class: 'css_class' %>
+			    </span>
+			    <% if current_user %>
+				    <% if current_user.id.in?(gossip.likes.pluck(:user_id)) %>
+					    <button type="button" class="btn btn-primary btn-md">
+						  <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> 
+						  <%= link_to gossip.likes.count, {:controller => "like", :action => "destroy", :id => Like.find_by(user_id: current_user.id, gossip_id: gossip.id).id}, method: :delete, style: 'color:#FFFFFF;'%>
+						  <!-- like_path(Like.find_by(user_id: current_user.id, gossip_id: gossip.id))-->
+						</button>
+					<% else %>
+						<button type="button" class="btn btn-default btn-md">
+						  <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
+						  <%= link_to gossip.likes.count,{:controller => "like", :action => "create", :gossip_id => gossip.id}, method: :post, style: 'color:#000000;'%>
+						</button>
+					<% end %>
+				<% end %>
+			  </div>
+			</div>
+		<% end %>
+	</div>
+</div>

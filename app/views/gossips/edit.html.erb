@@ -1,0 +1,38 @@
+<!-- ALERT MESSAGE IF INVALID GOSSIP -->
+
+<% if flash[:error] %>
+	<div class="alert alert-danger" role="alert">
+	  <button type="button" class="close" data-dismiss="alert">&times;</button>
+	  <p>The gossip could not be created due to the following reason(s) :</p>
+	  <ul>
+	    <% @gossip.errors.full_messages.each do |message| %>
+	      <li><%= message %></li>
+	    <% end %>
+	  </ul>
+	  </div>
+<% end %>
+
+
+<!-- EDIT GOSSIP FORM -->
+<br />
+<div class = "center">
+	<h1>Edit your gossip !</h1>
+	<br />
+
+	<%= form_tag gossip_path, method: "patch" do %>
+
+		  <span><strong><%= label_tag 'Title'%></strong></span>
+		  <%= text_field_tag 'title', @gossip.title, class: "form-control" %>
+		  <br /> 
+
+		  <span><strong><%= label_tag 'Content'%></strong></span>
+		  <%= text_area_tag 'content', @gossip.content, class: "form-control", rows:"5" %>
+		  <br /> 
+
+	  	<%= submit_tag "Update Gossip", class: "btn btn-warning btn-lg btn-block" %>
+
+	<% end %>
+	<br/>
+	<span class="btn btn-danger btn-lg btn-block" role="button"> <%= link_to "Delete the gossip", gossip_path(@gossip.id), method: :delete, data: {confirm: "Are you sure?"}, style: 'color:#FFFFFF;', class: 'css_class' %>
+	</span>
+</div>

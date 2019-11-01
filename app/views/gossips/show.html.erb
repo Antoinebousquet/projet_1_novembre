@@ -1,0 +1,72 @@
+<!-- ALERT MESSAGE IF UNSUCCESSFUL CREATION -->
+<% if flash[:error] %>
+	<div class="alert alert-danger" role="alert">
+	  <button type="button" class="close" data-dismiss="alert">&times;</button>
+	  <p>The gossip could not be created due to the following reason(s) :</p>
+	  <ul>
+	    <% @gossip.errors.full_messages.each do |message| %>
+	      <li><%= message %></li>
+	    <% end %>
+	  </ul>
+	  </div>
+<% end %>
+
+<!-- GOSSIP CONTAINER -->
+<div class = "container gossip">
+	<div class = "row">
+		<article class = "card col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<h1> <%= @gossip.title %></h1>
+			<br/>
+			<h4> <%= @gossip.content %> </h4>
+			<br/>
+			<p><em><strong> Author : </strong><%= @gossip.user.first_name %> <%= @gossip.user.last_name %>, from <%= @gossip.user.city.name %></em></p>
+		</article>
+	</div>
+	<br/>
+	<span class="btn btn-secondary" role="button"> <%= link_to "Go to author's profile page", user_path(@gossip.user.id), style: 'color:#FFFFFF;', class: 'css_class' %>
+	</span>
+	<span class="btn btn-info" role="button"> <%= link_to "Add a comment", new_gossip_comment_path(@gossip.id), style: 'color:#FFFFFF;', class: 'css_class' %>
+	</span>
+	<% if current_user == @gossip.user %>
+		<span class="btn btn-warning" role="button"> <%= link_to "Edit the gossip", edit_gossip_path(@gossip.id), style: 'color:#000000;', class: 'css_class' %>
+		</span>
+	<% end %>
+	<% if current_user %>
+	    <% if current_user.id.in?(@gossip.likes.pluck(:user_id)) %>
+		    <button type="button" class="btn btn-primary btn-md">
+			  <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> 
+			  <%= link_to @gossip.likes.count, {:controller => "like", :action => "destroy", :id => Like.find_by(user_id: current_user.id, gossip_id: @gossip.id).id}, method: :delete, style: 'color:#FFFFFF;'%>
+			</button>
+		<% else %>
+			<button type="button" class="btn btn-default btn-md">
+			  <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
+			  <%= link_to @gossip.likes.count,{:controller => "like", :action => "create", :gossip_id => @gossip.id}, method: :post, style: 'color:#000000;'%>
+			</button>
+		<% end %>
+	<% end %>
+</div>
+
+<!-- COMMENTS LIST -->
+<div class = "container list" >
+	<h1> <%= @gossip.comments.size %> comments : </h1>
+	<br/>
+	<div class = "row">
+		<% @gossip.comments.each_with_index do |comment, i| %>
+			<div class="card col-xs-12 col-sm-12 col-md-4 col-lg-4">
+			  <div class="card-body">
+			  	<h3><%= comment.content %></h3>
+			    <p><%= comment.user.first_name %> <%= comment.user.last_name %></p>
+			    <% if current_user == comment.user %>
+					<span class="btn btn-warning" role="button"> <%= link_to "Edit the comment", edit_gossip_comment_path(@gossip.id, comment.id), style: 'color:#000000;', class: 'css_class' %>
+					</span>
+					<span class="btn btn-danger" role="button"> <%= link_to "Delete the comment", gossip_comment_path(@gossip.id, comment.id), method: :delete,style: 'color:#000000;', class: 'css_class' %>
+					</span>
+				<% end %>
+			  </div>
+			</div>
+		<% end %>
+	</div>
+</div>
+
+
+	
